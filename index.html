@@ -16,74 +16,16 @@
   <div id="status" aria-live="polite"></div>
 
   <script>
-    const programs = {"1":"import matplotlib.pyplot as plt\r\nfrom sklearn.datasets import fetch_california_housing\r\n\r\ndf = fetch_california_housing(as_frame=True).frame\r\n\r\n\r\ndf.hist(figsize=(12,8))\r\nplt.show()\r\n\r\n\r\ndf.plot(kind=\"box\", subplots=True, layout=(3,3), figsize=(12,8))\r\nplt.show()\r\n\r\n\r\nfor c in df:\r\n    q1,q3 = df[c].quantile([0.25,0.75])\r\n    i = q3-q1\r\n    print(c, len(df[(df[c]\u003cq1-1.5*i)|(df[c]\u003eq3+1.5*i)]))\r\n\r\nprint(df.describe())","2":"import seaborn as sns, matplotlib.pyplot as plt\r\nfrom sklearn.datasets import fetch_california_housing\r\n\r\ndf = fetch_california_housing(as_frame=True).frame\r\n\r\n\r\nsns.heatmap(df.corr(), annot=True, cmap=\"coolwarm\")\r\nplt.show()\r\n\r\n\r\nsns.pairplot(df)\r\nplt.show()","3":"import matplotlib.pyplot as plt\r\nfrom sklearn.datasets import load_iris\r\nfrom sklearn.decomposition import PCA\r\n\r\nx,y = load_iris(return_X_y=True)\r\n\r\np = PCA(2).fit_transform(x)\r\n\r\nplt.scatter(p[:,0], p[:,1], c=y)\r\nplt.xlabel(\"PC1\")\r\nplt.ylabel(\"PC2\")\r\nplt.title(\"Iris PCA\")\r\nplt.show()","4":"import pandas as pd\r\n\r\ndf = pd.read_csv(\"training_data.csv\")\r\nh = [\u00270\u0027]*(len(df.columns)-1)\r\n\r\nfor _,r in df.iterrows():\r\n    if r.iloc[-1]==\"Yes\":\r\n        for i,j in enumerate(r[:-1]):\r\n            h[i] = j if h[i] in [\u00270\u0027,j] else \u0027?\u0027\r\n\r\nprint(h)","5":"import numpy as np, matplotlib.pyplot as plt\r\nfrom collections import Counter\r\n\r\nd=np.random.rand(100)\r\nx,y=d[:50],[\"Class1\" if i\u003c=.5 else \"Class2\" for i in d[:50]]\r\nt=d[50:]\r\n\r\ndef knn(p,k):\r\n    return Counter([y[i] for i in np.argsort(abs(x-p))[:k]]).most_common(1)[0][0]\r\n\r\nfor k in [1,3,5]:\r\n    c=[knn(i,k) for i in t]\r\n    c1=[t[i] for i in range(len(t)) if c[i]==\"Class1\"]\r\n    c2=[t[i] for i in range(len(t)) if c[i]==\"Class2\"]\r\n\r\n    plt.scatter(x,[0]*len(x),c=[\"b\" if i==\"Class1\" else \"r\" for i in y])\r\n    plt.scatter(c1,[1]*len(c1),c=\"b\",marker=\"x\")\r\n    plt.scatter(c2,[1]*len(c2),c=\"r\",marker=\"x\")\r\n    plt.title(f\"k={k}\")\r\n    plt.show()","6":"import numpy as np, matplotlib.pyplot as plt\r\n\r\ng=lambda x,xi,t: np.exp(-np.sum((x-xi)**2)/(2*t**2))\r\n\r\ndef lwr(x,X,y,t):\r\n    W=np.diag([g(x,i,t) for i in X])\r\n    return x @ np.linalg.inv(X.T@W@X) @ X.T @ W @ y\r\n\r\nX=np.linspace(0,2*np.pi,100)\r\ny=np.sin(X)+0.1*np.random.randn(100)\r\n\r\nXb=np.c_[np.ones(len(X)),X]\r\nxt=np.linspace(0,2*np.pi,200)\r\nxtb=np.c_[np.ones(len(xt)),xt]\r\n\r\nyp=[lwr(i,Xb,y,.5) for i in xtb]\r\n\r\nplt.scatter(X,y,c=\u0027r\u0027)\r\nplt.plot(xt,yp)\r\nplt.show()","7":"import pandas as pd, matplotlib.pyplot as plt\r\nfrom sklearn.datasets import fetch_california_housing\r\nfrom sklearn.model_selection import train_test_split\r\nfrom sklearn.linear_model import LinearRegression\r\nfrom sklearn.preprocessing import PolynomialFeatures\r\nfrom sklearn.pipeline import make_pipeline\r\nfrom sklearn.metrics import mean_squared_error,r2_score\r\n\r\nx,y=fetch_california_housing(as_frame=True,return_X_y=True)\r\nx=x[[\"AveRooms\"]]\r\nxtr,xte,ytr,yte=train_test_split(x,y,test_size=.2)\r\n\r\nm=LinearRegression().fit(xtr,ytr)\r\nyp=m.predict(xte)\r\n\r\nplt.scatter(xte,yte)\r\nplt.plot(xte,yp,c=\u0027r\u0027)\r\nplt.show()\r\n\r\nprint(\"Linear:\",mean_squared_error(yte,yp),r2_score(yte,yp))\r\n\r\nd=pd.read_csv(\"https://archive.ics.uci.edu/ml/machine-learning-databases/auto-mpg/auto-mpg.data\",\r\nsep=\u0027\\s+\u0027,na_values=\"?\",header=None).dropna()\r\n\r\nx,y=d[[2]],d[0]\r\nxtr,xte,ytr,yte=train_test_split(x,y,test_size=.2)\r\n\r\nm=make_pipeline(PolynomialFeatures(2),LinearRegression()).fit(xtr,ytr)\r\nyp=m.predict(xte)\r\n\r\nplt.scatter(xte,yte)\r\nplt.scatter(xte,yp,c=\u0027r\u0027)\r\nplt.show()\r\n\r\nprint(\"Polynomial:\",mean_squared_error(yte,yp),r2_score(yte,yp))","8":"import matplotlib.pyplot as plt\r\nfrom sklearn.datasets import load_breast_cancer\r\nfrom sklearn.model_selection import train_test_split\r\nfrom sklearn.tree import DecisionTreeClassifier, plot_tree\r\nfrom sklearn.metrics import accuracy_score\r\n\r\nx,y=load_breast_cancer(return_X_y=True)\r\nxtr,xte,ytr,yte=train_test_split(x,y,test_size=.2,random_state=42)\r\n\r\nm=DecisionTreeClassifier().fit(xtr,ytr)\r\n\r\nprint(\"Accuracy:\",accuracy_score(yte,m.predict(xte))*100)\r\nprint(\"Prediction:\",[\"Malignant\",\"Benign\"][m.predict([xte[0]])[0]])\r\n\r\nplot_tree(m,filled=True)\r\nplt.show()","9":"import matplotlib.pyplot as plt\r\nfrom sklearn.datasets import fetch_olivetti_faces\r\nfrom sklearn.model_selection import train_test_split, cross_val_score\r\nfrom sklearn.naive_bayes import GaussianNB\r\nfrom sklearn.metrics import accuracy_score, classification_report, confusion_matrix\r\n\r\nX, y = fetch_olivetti_faces(shuffle=True, random_state=42, return_X_y=True)\r\nXtr, Xte, ytr, yte = train_test_split(X, y, test_size=.3, random_state=42)\r\n\r\nm = GaussianNB().fit(Xtr, ytr)\r\nyp = m.predict(Xte)\r\n\r\nprint(f\"Accuracy: {accuracy_score(yte, yp)*100:.2f}%\")\r\nprint(\"\\nClassification Report:\")\r\nprint(classification_report(yte, yp, zero_division=1))\r\nprint(\"\\nConfusion Matrix:\")\r\nprint(confusion_matrix(yte, yp))\r\nprint(f\"\\nCross-validation accuracy: {cross_val_score(m, X, y, cv=5, scoring=\u0027accuracy\u0027).mean()*100:.2f}%\")\r\n\r\nfig, ax = plt.subplots(3, 5, figsize=(12, 8))\r\nfor a, img, t, p in zip(ax.ravel(), Xte, yte, yp):\r\n    a.imshow(img.reshape(64, 64), cmap=\"gray\")\r\n    a.set_title(f\"True: {t}, Pred: {p}\")\r\n    a.axis(\"off\")\r\nplt.tight_layout(); plt.show()","10":"import pandas as pd, matplotlib.pyplot as plt, seaborn as sns\r\nfrom sklearn.datasets import load_breast_cancer\r\nfrom sklearn.cluster import KMeans\r\nfrom sklearn.preprocessing import StandardScaler\r\nfrom sklearn.decomposition import PCA\r\nfrom sklearn.metrics import confusion_matrix\r\n\r\nx,y=load_breast_cancer(return_X_y=True)\r\n\r\nx=StandardScaler().fit_transform(x)\r\nk=KMeans(2,random_state=42).fit(x)\r\n\r\nprint(confusion_matrix(y,k.labels_))\r\n\r\np=PCA(2).fit_transform(x)\r\ndf=pd.DataFrame(p,columns=[\"PC1\",\"PC2\"])\r\ndf[\"Cluster\"]=k.labels_\r\n\r\nsns.scatterplot(data=df,x=\"PC1\",y=\"PC2\",hue=\"Cluster\")\r\nplt.scatter(*PCA(2).fit(x).transform(k.cluster_centers_).T,s=200,c=\u0027r\u0027,marker=\u0027X\u0027)\r\nplt.show()"};
+    const programs = {"1":"import gensim.downloader as api\r\n\r\nwv = api.load(\"word2vec-google-news-300\")\r\n\r\n# Word analogy\r\ndef relate(a,b,c):\r\n    print(f\"\\n{a} - {b} + {c}\")\r\n    for w,s in wv.most_similar(positive=[a,c],negative=[b],topn=5):\r\n        print(w, round(s,4))\r\n\r\n# Similarity\r\ndef sim(a,b):\r\n    print(f\"\\n{a} \u0026 {b} =\", round(wv.similarity(a,b),4))\r\n\r\n# Similar words\r\ndef similar(w):\r\n    print(f\"\\nSimilar to {w}:\")\r\n    for x,s in wv.most_similar(w,topn=5):\r\n        print(x, round(s,4))\r\n\r\nrelate(\"king\",\"man\",\"woman\")\r\nrelate(\"paris\",\"france\",\"germany\")\r\n\r\nsim(\"cat\",\"dog\")\r\nsim(\"music\",\"art\")\r\n\r\nsimilar(\"happy\")\r\nsimilar(\"technology\")\r\n","2":"# p2a.py\r\nimport gensim.downloader as api, matplotlib.pyplot as plt\r\nfrom sklearn.decomposition import PCA\r\n\r\nwv = api.load(\"word2vec-google-news-300\")\r\n\r\ndef relate(a,b,c):\r\n    r = wv.most_similar(positive=[a,c], negative=[b], topn=5)\r\n    print(f\"\\n{a}-{b}+{c}\")\r\n    for w,s in r: print(w, round(s,4))\r\n    return [a,b,c]+[w for w,_ in r]\r\n\r\nwords = relate(\"king\",\"man\",\"woman\")\r\n\r\nv = [wv[w] for w in words]\r\np = PCA(2).fit_transform(v)\r\n\r\nfor i,w in enumerate(words):\r\n    plt.scatter(p[i,0], p[i,1])\r\n    plt.text(p[i,0], p[i,1], w)\r\n\r\nplt.show()\r\n\r\n# p2b.py\r\nimport gensim.downloader as api, numpy as np, matplotlib.pyplot as plt\r\nfrom sklearn.decomposition import PCA\r\nfrom sklearn.manifold import TSNE\r\n\r\nwv = api.load(\"word2vec-google-news-300\")\r\n\r\nwords = [\"computer\",\"software\",\"hardware\",\"algorithm\",\"data\",\r\n         \"network\",\"programming\",\"machine\",\"learning\",\"artificial\"]\r\n\r\nvec = np.array([wv[w] for w in words])\r\n\r\nfor r,t in [(PCA(2),\"PCA\"),(TSNE(2,perplexity=3),\"TSNE\")]:\r\n    p = r.fit_transform(vec)\r\n\r\n    plt.figure(figsize=(8,6))\r\n    for i,w in enumerate(words):\r\n        plt.scatter(p[i,0],p[i,1])\r\n        plt.text(p[i,0],p[i,1],w)\r\n\r\n    plt.title(t)\r\n    plt.show()\r\n\r\nfor w in [\"computer\",\"learning\"]:\r\n    print(f\"\\nSimilar to {w}:\")\r\n    for x,s in wv.most_similar(w,topn=5):\r\n        print(x, round(s,4))","3":"from gensim.models import Word2Vec\r\nfrom sklearn.manifold import TSNE\r\nimport matplotlib.pyplot as plt, numpy as np\r\n\r\nc = [\r\n\"The patient was diagnosed with diabetes\",\r\n\"MRI scans reveal brain abnormalities\",\r\n\"Treatment involves antibiotics\",\r\n\"Symptoms include fever and fatigue\",\r\n\"The vaccine prevents infections\"\r\n]\r\n\r\nc = [i.lower().split() for i in c]\r\n\r\nm = Word2Vec(c, vector_size=50, min_count=1, epochs=50)\r\n\r\nw = list(m.wv.index_to_key)\r\ne = np.array([m.wv[i] for i in w])\r\n\r\np = TSNE(2, perplexity=3).fit_transform(e)\r\n\r\nfor i,j in enumerate(w):\r\n    plt.scatter(p[i,0],p[i,1])\r\n    plt.text(p[i,0],p[i,1],j)\r\n\r\nplt.show()\r\n\r\nfor x in [\"treatment\",\"vaccine\"]:\r\n    print(f\"\\nSimilar to {x}:\")\r\n    for w,s in m.wv.most_similar(x,topn=5):\r\n        print(w, round(s,2))","4":"import gensim.downloader as api, nltk, string\r\nfrom nltk.tokenize import word_tokenize\r\nfrom transformers import pipeline\r\n\r\nwv = api.load(\"glove-wiki-gigaword-100\")\r\ng = pipeline(\"text-generation\", model=\"gpt2\")\r\n\r\ndef enrich(p,k):\r\n    w=[]\r\n    for i in word_tokenize(p):\r\n        x=i.lower().strip(string.punctuation)\r\n        w.append(wv.most_similar(x,topn=1)[0][0] if x==k else i)\r\n    return \" \".join(w)\r\n\r\np = \"Who is king.\"\r\nep = enrich(p,\"king\")\r\n\r\nprint(\"Original:\",p)\r\nprint(\"Enriched:\",ep)\r\n\r\nprint(\"\\nGPT2 Response:\")\r\nprint(g(p,max_length=50)[0][\"generated_text\"])\r\n\r\nprint(\"\\nEnriched Response:\")\r\nprint(g(ep,max_length=50)[0][\"generated_text\"])","5":"import gensim.downloader as api, random, nltk\r\nnltk.download(\u0027punkt\u0027)\r\n\r\nwv = api.load(\"glove-wiki-gigaword-100\")\r\n\r\ndef para(w):\r\n    try:\r\n        s = [x[0] for x in wv.most_similar(w, topn=5)]\r\n        t = [\r\n            f\"The {w} was surrounded by {s[0]} and {s[1]}.\",\r\n            f\"{w} is linked with {s[2]} and {s[3]}.\",\r\n            f\"In the world of {w}, {s[4]} was common.\",\r\n            f\"A story of {w} needs {s[1]} and {s[3]}.\"\r\n        ]\r\n        return \" \".join(random.choice(t) for _ in range(4))\r\n    except:\r\n        return \"Word not found.\"\r\n\r\nprint(para(input(\"Enter a seed word: \")))","6":"from transformers import pipeline\r\n\r\nsa = pipeline(\"sentiment-analysis\",model=\"distilbert-base-uncased-finetuned-sst-2-english\")\r\n\r\nreviews = [\r\n    \"The product is amazing!\",\r\n    \"The service was terrible.\",\r\n    \"It was average.\",\r\n    \"Fantastic quality!\",\r\n    \"Not great, not bad either.\"\r\n]\r\n\r\nfor r in reviews:\r\n    x = sa(r)[0]\r\n    print(f\"{r} -\u003e {x[\u0027label\u0027]} ({x[\u0027score\u0027]:.2f})\")","7":"from transformers import pipeline\r\n\r\nsummarizer = pipeline(\r\n    \"summarization\",\r\n    model=\"facebook/bart-large-cnn\"\r\n)\r\n\r\ntext = \"\"\"\r\nArtificial Intelligence (AI) is transforming industries like healthcare,\r\nfinance, education, and entertainment. AI systems can learn from data,\r\nsolve problems, and make decisions. Technologies such as machine learning\r\nand deep learning power applications like chatbots, recommendation systems,\r\nand self-driving cars. However, AI also raises ethical concerns including\r\nbias and job displacement.\r\n\"\"\"\r\n\r\nsummary = summarizer(text, max_length=60, min_length=20, do_sample=False)\r\n\r\nprint(summary[0][\"summary_text\"])","8":"import getpass\r\nimport cohere\r\n\r\n# Read file\r\ntext = open(\"Teaching.txt\", encoding=\"utf-8\").read()\r\n\r\n# API key\r\nkey = getpass.getpass(\"Enter Cohere API Key: \")\r\n\r\n# Load Cohere client\r\nclient = cohere.Client(key)\r\n\r\n# Prompt\r\nprompt = f\"\"\"\r\nSummarize this text, give 3 key points, and sentiment.\r\n\r\n{text}\r\n\"\"\"\r\n\r\n# Generate response\r\nresponse = client.generate(model=\"command\", prompt=prompt, max_tokens=300)\r\nprint(response.generations[0].text)","9":"\r\nimport wikipediaapi\r\n\r\nimport ipywidgets as w\r\nfrom IPython.display import display\r\n\r\n# Per Wikimedia policy, use a descriptive user agent (app/version + contact or URL).\r\nwiki = wikipediaapi.Wikipedia(\r\n    user_agent=\"InstitutionLookupBot/1.0 (https://example.com/contact)\",\r\n    language=\"en\",\r\n)\r\n\r\ndef fetch(b):\r\n    p = wiki.page(t.value)\r\n\r\n    if not p.exists():\r\n        print(\"Page not found\")\r\n        return\r\n\r\n    print(\"Summary:\\n\", p.summary[:500])\r\n\r\n    for i in p.text.split(\"\\n\"):\r\n        if \"Founder\" in i or \"Founded\" in i:\r\n            print(i)\r\n\r\nt = w.Text(placeholder=\"Enter institution\")\r\nb = w.Button(description=\"Fetch\")\r\n\r\nb.on_click(fetch)\r\n\r\ndisplay(t,b)\r\n","10":"from cohere import Client\r\nimport wikipediaapi\r\nimport ipywidgets as w\r\nfrom IPython.display import display\r\nimport getpass\r\n\r\nco = Client(getpass.getpass(\"Cohere API Key: \"))\r\n\r\nwiki = wikipediaapi.Wikipedia(user_agent=\"App\", language=\"en\")\r\nipc = wiki.page(\"Indian Penal Code\").summary[:3000]\r\n\r\ndef ask(b):\r\n    q = t.value\r\n\r\n    r = co.generate(\r\n        model=\"command\",\r\n        prompt=f\"IPC:\\n{ipc}\\n\\nQuestion:{q}\\nAnswer:\",\r\n        max_tokens=120\r\n    )\r\n\r\n    print(r.generations[0].text)\r\n\r\nt = w.Text(placeholder=\"Ask about IPC\")\r\nb = w.Button(description=\"Ask\")\r\n\r\nb.on_click(ask)\r\n\r\ndisplay(t,b)"};
     const buttons = document.getElementById('buttons');
     const status = document.getElementById('status');
-    const p2Combined = `# p2a.py
-import gensim.downloader as api, matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
-
-wv = api.load("word2vec-google-news-300")
-
-def relate(a,b,c):
-    r = wv.most_similar(positive=[a,c], negative=[b], topn=5)
-    print(f"\\n{a}-{b}+{c}")
-    for w,s in r: print(w, round(s,4))
-    return [a,b,c]+[w for w,_ in r]
-
-words = relate("king","man","woman")
-
-v = [wv[w] for w in words]
-p = PCA(2).fit_transform(v)
-
-for i,w in enumerate(words):
-    plt.scatter(p[i,0], p[i,1])
-    plt.text(p[i,0], p[i,1], w)
-
-plt.show()
-
-# p2b.py
-import gensim.downloader as api, numpy as np, matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
-
-wv = api.load("word2vec-google-news-300")
-
-words = ["computer","software","hardware","algorithm","data",
-         "network","programming","machine","learning","artificial"]
-
-vec = np.array([wv[w] for w in words])
-
-for r,t in [(PCA(2),"PCA"),(TSNE(2,perplexity=3),"TSNE")]:
-    p = r.fit_transform(vec)
-
-    plt.figure(figsize=(8,6))
-    for i,w in enumerate(words):
-        plt.scatter(p[i,0],p[i,1])
-        plt.text(p[i,0],p[i,1],w)
-
-    plt.title(t)
-    plt.show()
-
-for w in ["computer","learning"]:
-    print(f"\\nSimilar to {w}:")
-    for x,s in wv.most_similar(w,topn=5):
-        print(x, round(s,4))
-`;
-
-    function setStatus(message, ok) {
+function setStatus(message, ok) {
       status.textContent = message;
       status.style.color = ok ? 'green' : 'crimson';
     }
 
     async function copyProgram(number) {
       try {
-        if (number === 2) {
-          await navigator.clipboard.writeText(p2Combined);
-          setStatus('Programs p2a.py + p2b.py copied.', true);
-          return;
-        }
-
         await navigator.clipboard.writeText(programs[String(number)]);
         setStatus(`Program p${number}.py copied.`, true);
       } catch (error) {
@@ -101,3 +43,4 @@ for w in ["computer","learning"]:
   </script>
 </body>
 </html>
+
